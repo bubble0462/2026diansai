@@ -10,9 +10,9 @@
 
 | 屏幕引脚 | STM32 | CubeMX 标签 | 说明 |
 |---|---|---|---|
-| SCL/SCK | PA5 | SPI1_SCK | SPI1 时钟 |
-| SDO/MISO | PA6 | SPI1_MISO | SPI1 主机输入（读字库用） |
-| SDI/MOSI | PA7 | SPI1_MOSI | SPI1 主机输出 |
+| SCL/SCK | PB13 | SPI2_SCK | SPI2 时钟 |
+| SDO/MISO | PB14 | SPI2_MISO | SPI2 主机输入（读字库用） |
+| SDI/MOSI | PB15 | SPI2_MOSI | SPI2 主机输出 |
 | RST | PD3 | SPI_RST | 屏幕硬复位（低有效） |
 | DC | PD4 | SPI_DC | 数据/命令（0=命令, 1=数据） |
 | CS1 | PD5 | SPI_CS | **TFT 屏片选**（低有效） |
@@ -21,12 +21,12 @@
 | VCC | 3.3V | — | — |
 | GND | GND | — | — |
 
-## SPI 配置（CubeMX 在 spi.c 中由 MX_SPI1_Init() 完成）
+## SPI 配置（CubeMX 在 spi.c 中由 MX_SPI2_Init() 完成）
 
 - Master, Full-Duplex, 8-bit, MSB First
 - **CPOL=Low, CPHA=1 Edge（SPI Mode 0）**
 - NSS: Software
-- BaudRate: APB2(84MHz) / 8 = **10.5 MHz**（ST7789VW 写时钟上限 15.4MHz，安全）
+- BaudRate: APB1(42MHz) / 4 = **10.5 MHz**（ST7789VW 写时钟上限 15.4MHz，安全）
 
 ## 分层架构
 
@@ -41,11 +41,11 @@
 │  lcd.c       ST7789 驱动 (命令/GRAM/绘图)    │
 │  TFT_init / TFT_SET_ADD / TFT_Fill_Rectangle│
 ├─────────────────────────────────────────────┤
-│  lcd_bus.c   SPI1 总线 (HAL 封装)           │
+│  lcd_bus.c   SPI2 总线 (HAL 封装)           │
 │  LCD_Bus_WriteByte / LCD_Bus_FillColor      │
 │  + 控制脚宏 (RST/DC/CS/CS2/BL)              │
 ├─────────────────────────────────────────────┤
-│  spi.c (CubeMX 生成)  MX_SPI1_Init / hspi1 │
+│  spi.c (CubeMX 生成)  MX_SPI2_Init / hspi2 │
 └─────────────────────────────────────────────┘
 ```
 
@@ -55,7 +55,7 @@
 #include "lcd.h"
 #include "lcd_font.h"
 
-/* main() 中, MX_SPI1_Init() 之后 */
+/* main() 中, MX_SPI2_Init() 之后 */
 LCD_Bus_Init();          // 设置 CS/CS2/DC/BL 默认态
 TFT_init();              // ST7789VW 初始化序列
 BL_1;                    // 开背光
@@ -86,7 +86,7 @@ if (CHECK_FALSH())       // 字库自检
 
 | 文件 | 内容 |
 |---|---|
-| `lcd_bus.h/.c` | SPI1 总线层 + 控制脚宏（RST/DC/CS/CS2/BL）|
+| `lcd_bus.h/.c` | SPI2 总线层 + 控制脚宏（RST/DC/CS/CS2/BL）|
 | `lcd.h/.c` | ST7789VW 驱动（init/clear/full/矩形/画点/设窗口）|
 | `lcd_font.h/.c` | W25Qxx 字库读取 + GB2312 中英文/数字渲染 |
 

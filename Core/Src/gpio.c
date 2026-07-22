@@ -41,18 +41,67 @@
 */
 void MX_GPIO_Init(void)
 {
+
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, LED_Pin|AD9959_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, AD9959_SCLK_Pin|AD9959_IO_UPDATE_Pin|AD9959_SDIO0_Pin|AD9959_PS1_Pin
+                          |AD9959_PS2_Pin|AD9959_PS3_Pin|AD9959_PS0_Pin|AD9959_SDIO1_Pin
+                          |AD9959_SDIO2_Pin|AD9959_SDIO3_Pin|AD9959_PWR_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(AD9959_RESET_GPIO_Port, AD9959_RESET_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, SPI_RST_Pin|SPI_DC_Pin|SPI_CS_Pin|SPI_CS2_Pin
                           |BL_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : PD3 PD4 PD5 PD6 PD7 (LCD 控制脚, 默认高电平) */
+  /*Configure GPIO pins : KEY2_Pin KEY3_Pin KEY4_Pin KEY5_Pin
+                           KEY6_Pin KEY7_Pin KEY0_Pin KEY1_Pin */
+  GPIO_InitStruct.Pin = KEY2_Pin|KEY3_Pin|KEY4_Pin|KEY5_Pin
+                          |KEY6_Pin|KEY7_Pin|KEY0_Pin|KEY1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : AD9959_SCLK_Pin AD9959_CS_Pin AD9959_IO_UPDATE_Pin AD9959_SDIO0_Pin
+                           AD9959_PS1_Pin AD9959_PS2_Pin AD9959_PS3_Pin AD9959_PS0_Pin
+                           AD9959_SDIO1_Pin AD9959_SDIO2_Pin AD9959_SDIO3_Pin AD9959_PWR_Pin */
+  GPIO_InitStruct.Pin = AD9959_SCLK_Pin|AD9959_CS_Pin|AD9959_IO_UPDATE_Pin|AD9959_SDIO0_Pin
+                          |AD9959_PS1_Pin|AD9959_PS2_Pin|AD9959_PS3_Pin|AD9959_PS0_Pin
+                          |AD9959_SDIO1_Pin|AD9959_SDIO2_Pin|AD9959_SDIO3_Pin|AD9959_PWR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : AD9959_RESET_Pin */
+  GPIO_InitStruct.Pin = AD9959_RESET_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(AD9959_RESET_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : SPI_RST_Pin SPI_DC_Pin SPI_CS_Pin SPI_CS2_Pin
+                           BL_Pin */
   GPIO_InitStruct.Pin = SPI_RST_Pin|SPI_DC_Pin|SPI_CS_Pin|SPI_CS2_Pin
                           |BL_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
