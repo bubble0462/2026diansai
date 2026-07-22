@@ -26,6 +26,84 @@ const unsigned char TAB_COLOR[][2] =
 
 unsigned char FONT_BUFFER[104];        /* 26*26 最大 = 4*26 = 104 字节 */
 
+typedef struct
+{
+    uint16_t unicode;
+    uint8_t gb2312_msb;
+    uint8_t gb2312_lsb;
+} UTF8_GB2312_MAP_t;
+
+/* Extend this table when a new UTF-8 Chinese character is needed by the UI. */
+static const UTF8_GB2312_MAP_t UTF8_GB2312_MAP[] =
+{
+    {0x4EA4, 0xBD, 0xBB}, {0x4EEA, 0xD2, 0xC7}, {0x4F0F, 0xB7, 0xFC},
+    {0x4F4D, 0xCE, 0xBB}, {0x503C, 0xD6, 0xB5}, {0x5146, 0xD5, 0xD7},
+    {0x5165, 0xC8, 0xEB}, {0x5179, 0xD7, 0xC8}, {0x51FA, 0xB3, 0xF6},
+    {0x529F, 0xB9, 0xA6}, {0x5343, 0xC7, 0xA7}, {0x5355, 0xB5, 0xA5},
+    {0x538B, 0xD1, 0xB9}, {0x5668, 0xC6, 0xF7}, {0x56E0, 0xD2, 0xF2},
+    {0x5747, 0xBE, 0xF9}, {0x5B89, 0xB0, 0xB2}, {0x5C4F, 0xC6, 0xC1},
+    {0x5E45, 0xB7, 0xF9}, {0x5E55, 0xC4, 0xBB}, {0x5E73, 0xC6, 0xBD},
+    {0x5EA6, 0xB6, 0xC8}, {0x5FAE, 0xCE, 0xA2}, {0x5F26, 0xCF, 0xD2},
+    {0x5F62, 0xD0, 0xCE}, {0x611F, 0xB8, 0xD0}, {0x65B9, 0xB7, 0xBD},
+    {0x65E0, 0xCE, 0xDE}, {0x65F6, 0xCA, 0xB1}, {0x6570, 0xCA, 0xFD},
+    {0x663E, 0xCF, 0xD4}, {0x6700, 0xD7, 0xEE}, {0x6709, 0xD3, 0xD0},
+    {0x671F, 0xC6, 0xDA}, {0x6BEB, 0xBA, 0xC1}, {0x6D41, 0xC1, 0xF7},
+    {0x6D4B, 0xB2, 0xE2}, {0x6E29, 0xCE, 0xC2}, {0x6CE2, 0xB2, 0xA8},
+    {0x70B9, 0xB5, 0xE3}, {0x7387, 0xC2, 0xCA}, {0x74E6, 0xCD, 0xDF},
+    {0x7535, 0xB5, 0xE7}, {0x76F4, 0xD6, 0xB1}, {0x76F8, 0xCF, 0xE0},
+    {0x793A, 0xCA, 0xBE}, {0x79D2, 0xC3, 0xEB}, {0x7A0B, 0xB3, 0xCC},
+    {0x7A33, 0xCE, 0xC8}, {0x7C7B, 0xC0, 0xE0}, {0x7CBE, 0xBE, 0xAB},
+    {0x80FD, 0xC4, 0xDC}, {0x8868, 0xB1, 0xED}, {0x89C6, 0xCA, 0xD3},
+    {0x89D2, 0xBD, 0xC7}, {0x8BA1, 0xBC, 0xC6}, {0x8BBE, 0xC9, 0xE8},
+    {0x8BD5, 0xCA, 0xD4}, {0x8BEF, 0xCE, 0xF3}, {0x8F93, 0xCA, 0xE4},
+    {0x91CF, 0xC1, 0xBF}, {0x963B, 0xD7, 0xE8}, {0x9891, 0xC6, 0xB5},
+    {0x989D, 0xB6, 0xEE}, {0xFF08, 0xA3, 0xA8}, {0xFF09, 0xA3, 0xA9},
+    {0xFF0C, 0xA3, 0xAC}, {0xFF1A, 0xA3, 0xBA}
+};
+
+static uint8_t LCD_IsValidUtf8(const uint8_t *string)
+{
+    while (*string != 0U)
+    {
+        if (*string < 0x80U)
+        {
+            string++;
+        }
+        else if (((string[0] & 0xE0U) == 0xC0U) &&
+                 ((string[1] & 0xC0U) == 0x80U))
+        {
+            string += 2;
+        }
+        else if (((string[0] & 0xF0U) == 0xE0U) &&
+                 ((string[1] & 0xC0U) == 0x80U) &&
+                 ((string[2] & 0xC0U) == 0x80U))
+        {
+            string += 3;
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+static uint8_t LCD_UnicodeToGb2312(uint16_t unicode, uint8_t *gb2312)
+{
+    uint16_t i;
+
+    for (i = 0U; i < (sizeof(UTF8_GB2312_MAP) / sizeof(UTF8_GB2312_MAP[0])); i++)
+    {
+        if (UTF8_GB2312_MAP[i].unicode == unicode)
+        {
+            gb2312[0] = UTF8_GB2312_MAP[i].gb2312_msb;
+            gb2312[1] = UTF8_GB2312_MAP[i].gb2312_lsb;
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 /* ===================== W25Qxx 字库 Flash 读取 ===================== */
 void W25QXX_Read(unsigned char *pBuffer, unsigned int ReadAddr,
                  unsigned short int NumByteToRead)
@@ -309,6 +387,58 @@ void DIS_CHINESE(unsigned short int x_start, unsigned short int y_start, char *s
             ADD_X_START = ADD_X_END;
         }
     }
+}
+
+void DIS_CHINESE_AUTO(unsigned short int x_start, unsigned short int y_start,
+                      const char *string)
+{
+    uint8_t converted[256];
+    uint16_t input_pos = 0U;
+    uint16_t output_pos = 0U;
+    uint16_t unicode;
+    const uint8_t *input = (const uint8_t *)string;
+
+    if (string == NULL)
+    {
+        return;
+    }
+
+    if (LCD_IsValidUtf8(input) == FALSE)
+    {
+        DIS_CHINESE(x_start, y_start, (char *)string);
+        return;
+    }
+
+    while ((input[input_pos] != 0U) && (output_pos < (sizeof(converted) - 2U)))
+    {
+        if (input[input_pos] < 0x80U)
+        {
+            converted[output_pos++] = input[input_pos++];
+        }
+        else if ((input[input_pos] & 0xE0U) == 0xC0U)
+        {
+            /* The GB2312 font has no two-byte UTF-8 symbols in this small map. */
+            converted[output_pos++] = '?';
+            input_pos += 2U;
+        }
+        else
+        {
+            unicode = (uint16_t)(((uint16_t)(input[input_pos] & 0x0FU) << 12) |
+                                 ((uint16_t)(input[input_pos + 1U] & 0x3FU) << 6) |
+                                 (uint16_t)(input[input_pos + 2U] & 0x3FU));
+            if (LCD_UnicodeToGb2312(unicode, &converted[output_pos]) != FALSE)
+            {
+                output_pos += 2U;
+            }
+            else
+            {
+                converted[output_pos++] = '?';
+            }
+            input_pos += 3U;
+        }
+    }
+    converted[output_pos] = '\0';
+    DIS_CHINESE(x_start, y_start, (char *)converted);
 }
 
 /* ===================== 数字显示 ===================== */

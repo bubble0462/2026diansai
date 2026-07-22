@@ -1,6 +1,6 @@
 f407demo-mdk5\lcd_font.o: ../BSP/TFTLCD-3.2/lcd_font.c
 f407demo-mdk5\lcd_font.o: ../BSP/TFTLCD-3.2/lcd_font.h
-f407demo-mdk5\lcd_font.o: D:\Develop\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+f407demo-mdk5\lcd_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 f407demo-mdk5\lcd_font.o: ../BSP/TFTLCD-3.2/lcd.h
 f407demo-mdk5\lcd_font.o: ../BSP/TFTLCD-3.2/lcd_bus.h
 f407demo-mdk5\lcd_font.o: ../Core/Inc/main.h
@@ -18,7 +18,7 @@ f407demo-mdk5\lcd_font.o: ../Drivers/CMSIS/Include/mpu_armv7.h
 f407demo-mdk5\lcd_font.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-f407demo-mdk5\lcd_font.o: D:\Develop\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+f407demo-mdk5\lcd_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -32,4 +32,4 @@ f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flas
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 f407demo-mdk5\lcd_font.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h
-f407demo-mdk5\lcd_font.o: D:\Develop\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+f407demo-mdk5\lcd_font.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h

@@ -100,9 +100,9 @@ int main(void)
   {
       TFT_full(BLACK);            /* 黑底 */
 
-      /* 标题: "屏幕测试" GB2312 */
+      /* 标题: 自动兼容 UTF-8 / GB2312 */
       SET_FONT_STYLE(WHITE, BLACK, SONG_STYLE24);
-      DIS_CHINESE(10, 10, "\xC6\xC1\xC4\xBB\xB2\xE2\xCA\xD4");
+      DIS_CHINESE_AUTO(10, 10, "屏幕测试");
 
       /* 浮点数显示 */
       SET_FONT_STYLE(GREEN, BLACK, SONG_STYLE20);
