@@ -1,0 +1,28 @@
+# Keil MDK build output
+MDK-ARM/f407demo-mdk5/
+MDK-ARM/*.lst
+
+# Keil generated files
+*.o
+*.d
+*.crf
+*.axf
+*.elf
+*.hex
+*.map
+*.lnp
+*.dep
+*.build_log.htm
+
+# Keil per-user configuration
+*.uvguix.*
+*.uvgui.*
+
+# Editor and operating-system files
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+Desktop.ini
+.DS_Store
