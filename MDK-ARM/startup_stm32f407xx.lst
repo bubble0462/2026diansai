@@ -849,10 +849,10 @@ interwork --depend=f407demo-mdk5\startup_stm32f407xx.d -of407demo-mdk5\startup_
 ARM Macro Assembler    Page 14 
 
 
-stm32f407xx.o -I.\RTE\_f407demo-mdk5 -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\6.1.0\CMSI
-S\Core\Include --predefine="__UVISION_VERSION SETA 540" --predefine="STM32F407x
-x SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_stm
-32f407xx.s
+stm32f407xx.o -I.\RTE\_f407demo-mdk5 -ID:\Develop\Arm\Packs\ARM\CMSIS\6.3.0\CMS
+IS\Core\Include --predefine="__UVISION_VERSION SETA 543" --predefine="STM32F407
+xx SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_st
+m32f407xx.s
 
 
 
