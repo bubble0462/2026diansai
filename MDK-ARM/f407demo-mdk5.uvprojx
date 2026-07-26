@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../BSP/TFTLCD-3.2</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../BSP/TFTLCD-3.2;../BSP/AD9959</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1139,6 +1139,26 @@
               <FileName>lcd_font.c</FileName>
               <FileType>1</FileType>
               <FilePath>../BSP/TFTLCD-3.2/lcd_font.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>BSP/AD9959</GroupName>
+          <Files>
+            <File>
+              <FileName>AD9959.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/AD9959/AD9959.c</FilePath>
+            </File>
+            <File>
+              <FileName>AD9959_Outset.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/AD9959/AD9959_Outset.c</FilePath>
+            </File>
+            <File>
+              <FileName>delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../BSP/AD9959/delay.c</FilePath>
             </File>
           </Files>
         </Group>

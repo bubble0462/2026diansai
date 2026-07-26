@@ -30,6 +30,8 @@
 #include "lcd_bus.h"
 #include "lcd.h"
 #include "lcd_font.h"
+#include "AD9959.h"
+#include "delay.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,6 +106,9 @@ int main(void)
   MX_TIM4_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  Delay_Init();
+  AD9959_Init();
+
   /* 3.2" TFT (ST7789VW) + W25Qxx 字库初始化与自检 */
   LCD_Bus_Init();                 /* 设置 CS/CS2/DC/BL 默认态 */
   TFT_init();                     /* ST7789VW 初始化序列 */

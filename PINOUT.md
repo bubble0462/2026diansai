@@ -51,9 +51,12 @@ SPI2 DMA and interrupt are disabled. PB12 is not SPI2_NSS.
 
 All AD9959 pins are push-pull outputs with no pull and very-high speed. CubeMX
 generates safe `HAL_GPIO_WritePin` levels before `HAL_GPIO_Init`, reducing
-configuration-time output glitches. This base project does not include the
-AD9959 register driver. Future reference-clock and PLL settings must follow the
-verified `D:\Users\Project-Keil\PRJ\F407VGT6\diansai-basic` implementation.
+configuration-time output glitches. The software-serial register driver under
+`BSP/AD9959` is adapted from the verified
+`D:\Users\Project-Keil\PRJ\F407VGT6\diansai-basic` implementation and uses its
+25 MHz reference clock, PLL x20, and 500 MHz system-clock settings. The base
+firmware initializes the delay timer and resets the AD9959 after GPIO setup;
+applications select channels and configure output frequency/amplitude as needed.
 
 ## USART1 Debug Port
 

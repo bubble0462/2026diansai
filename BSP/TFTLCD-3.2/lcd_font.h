@@ -137,7 +137,7 @@ void DIS_CHINESE(unsigned short int x_start, unsigned short int y_start,
 /**
  * @brief Display an ASCII/Chinese string using automatic source encoding detection.
  * @note  Accepts UTF-8 or GB2312. The built-in UTF-8 mapping covers common
- *        instrument UI terms; unsupported UTF-8 characters are shown as '?'.
+ *        instrument and waveform UI terms; unsupported characters show as '?'.
  */
 void DIS_CHINESE_AUTO(unsigned short int x_start, unsigned short int y_start,
                       const char *string);
