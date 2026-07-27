@@ -18,6 +18,9 @@ MDK-ARM/*.lst
 *.uvguix.*
 *.uvgui.*
 
+# Keil per-user project options
+*.uvoptx
+
 # Editor and operating-system files
 .vscode/
 .idea/

@@ -4,8 +4,14 @@
 /* REFCLK 25 MHz x PLL 20 = 500 MHz system clock (diansai-basic) */
 #define system_clk 500000000.0
 
+#define CSR 0x00U
+#define FR1 0x01U
+
 void AD9959_Init(void)
 {
+    uint8_t all_channels = 0xF0U;
+    uint8_t function_register_1[3] = {0xD0U, 0x00U, 0x00U};
+
     PWR_0;
     CS_1;
     SCLK_0;
@@ -19,11 +25,18 @@ void AD9959_Init(void)
     SDIO2_0;
     SDIO3_0;
 
+    /* The module reference oscillator can start later than the MCU. */
     RESET_0;
-    Delay_us(10U);
+    Delay_ms(100U);
     RESET_1;
-    Delay_us(100U);
+    Delay_ms(1U);
     RESET_0;
+    Delay_ms(10U);
+
+    /* Select 1-bit SDIO, enable all write targets, then start PLL x20. */
+    WriteToAD9959ViaSpi(CSR, 1U, &all_channels, 0U);
+    WriteToAD9959ViaSpi(FR1, 3U, function_register_1, 1U);
+    Delay_ms(10U);
 }
 
 void WrFrequencyTuningWorddata(double f, uint8_t *ChannelFrequencyTuningWorddata)
