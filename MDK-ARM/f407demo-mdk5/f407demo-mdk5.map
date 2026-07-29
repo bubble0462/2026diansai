@@ -1109,31 +1109,31 @@ Image Symbol Table
     __NVIC_SetPriority                       0x080031a1   Thumb Code    32  stm32f4xx_hal_cortex.o(i.__NVIC_SetPriority)
     i._is_digit                              0x080031c0   Section        0  __printf_wp.o(i._is_digit)
     i.main                                   0x080031d0   Section        0  main.o(i.main)
-    locale$$code                             0x0800328c   Section       44  lc_numeric_c.o(locale$$code)
-    x$fpl$fpinit                             0x080032b8   Section       10  fpinit.o(x$fpl$fpinit)
-    $v0                                      0x080032b8   Number         0  fpinit.o(x$fpl$fpinit)
-    x$fpl$printf1                            0x080032c2   Section        4  printf1.o(x$fpl$printf1)
-    $v0                                      0x080032c2   Number         0  printf1.o(x$fpl$printf1)
-    x$fpl$printf2                            0x080032c6   Section        4  printf2.o(x$fpl$printf2)
-    $v0                                      0x080032c6   Number         0  printf2.o(x$fpl$printf2)
-    .constdata                               0x080032ca   Section       16  system_stm32f4xx.o(.constdata)
-    x$fpl$usenofp                            0x080032ca   Section        0  usenofp.o(x$fpl$usenofp)
-    .constdata                               0x080032da   Section       10  lcd_font.o(.constdata)
-    .constdata                               0x080032e4   Section       17  __printf_flags_ss_wp.o(.constdata)
-    maptable                                 0x080032e4   Data          17  __printf_flags_ss_wp.o(.constdata)
-    .constdata                               0x080032f5   Section       38  _printf_fp_hex.o(.constdata)
-    lc_hextab                                0x080032f5   Data          19  _printf_fp_hex.o(.constdata)
-    uc_hextab                                0x08003308   Data          19  _printf_fp_hex.o(.constdata)
-    .constdata                               0x0800331c   Section      148  bigflt0.o(.constdata)
-    tenpwrs_x                                0x0800331c   Data          60  bigflt0.o(.constdata)
-    tenpwrs_i                                0x08003358   Data          64  bigflt0.o(.constdata)
-    locale$$data                             0x080033d0   Section       28  lc_numeric_c.o(locale$$data)
-    __lcnum_c_name                           0x080033d4   Data           2  lc_numeric_c.o(locale$$data)
-    __lcnum_c_start                          0x080033dc   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_point                          0x080033e8   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_thousands                      0x080033ea   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_grouping                       0x080033eb   Data           0  lc_numeric_c.o(locale$$data)
-    __lcnum_c_end                            0x080033ec   Data           0  lc_numeric_c.o(locale$$data)
+    locale$$code                             0x08003288   Section       44  lc_numeric_c.o(locale$$code)
+    x$fpl$fpinit                             0x080032b4   Section       10  fpinit.o(x$fpl$fpinit)
+    $v0                                      0x080032b4   Number         0  fpinit.o(x$fpl$fpinit)
+    x$fpl$printf1                            0x080032be   Section        4  printf1.o(x$fpl$printf1)
+    $v0                                      0x080032be   Number         0  printf1.o(x$fpl$printf1)
+    x$fpl$printf2                            0x080032c2   Section        4  printf2.o(x$fpl$printf2)
+    $v0                                      0x080032c2   Number         0  printf2.o(x$fpl$printf2)
+    .constdata                               0x080032c6   Section       16  system_stm32f4xx.o(.constdata)
+    x$fpl$usenofp                            0x080032c6   Section        0  usenofp.o(x$fpl$usenofp)
+    .constdata                               0x080032d6   Section       10  lcd_font.o(.constdata)
+    .constdata                               0x080032e0   Section       17  __printf_flags_ss_wp.o(.constdata)
+    maptable                                 0x080032e0   Data          17  __printf_flags_ss_wp.o(.constdata)
+    .constdata                               0x080032f1   Section       38  _printf_fp_hex.o(.constdata)
+    lc_hextab                                0x080032f1   Data          19  _printf_fp_hex.o(.constdata)
+    uc_hextab                                0x08003304   Data          19  _printf_fp_hex.o(.constdata)
+    .constdata                               0x08003318   Section      148  bigflt0.o(.constdata)
+    tenpwrs_x                                0x08003318   Data          60  bigflt0.o(.constdata)
+    tenpwrs_i                                0x08003354   Data          64  bigflt0.o(.constdata)
+    locale$$data                             0x080033cc   Section       28  lc_numeric_c.o(locale$$data)
+    __lcnum_c_name                           0x080033d0   Data           2  lc_numeric_c.o(locale$$data)
+    __lcnum_c_start                          0x080033d8   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_point                          0x080033e4   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_thousands                      0x080033e6   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_grouping                       0x080033e7   Data           0  lc_numeric_c.o(locale$$data)
+    __lcnum_c_end                            0x080033e8   Data           0  lc_numeric_c.o(locale$$data)
     .data                                    0x20000000   Section       12  stm32f4xx_hal.o(.data)
     .data                                    0x2000000c   Section        4  system_stm32f4xx.o(.data)
     .data                                    0x20000010   Section        1  lcd.o(.data)
@@ -1426,18 +1426,18 @@ Image Symbol Table
     W25QXX_Read                              0x080030e1   Thumb Code    84  lcd_font.o(i.W25QXX_Read)
     __ARM_fpclassify                         0x08003171   Thumb Code    48  fpclassify.o(i.__ARM_fpclassify)
     _is_digit                                0x080031c1   Thumb Code    14  __printf_wp.o(i._is_digit)
-    main                                     0x080031d1   Thumb Code   152  main.o(i.main)
-    _get_lc_numeric                          0x0800328d   Thumb Code    44  lc_numeric_c.o(locale$$code)
-    _fp_init                                 0x080032b9   Thumb Code    10  fpinit.o(x$fpl$fpinit)
-    __fplib_config_fpu_vfp                   0x080032c1   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fplib_config_pureend_doubles           0x080032c1   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    _printf_fp_dec                           0x080032c3   Thumb Code     4  printf1.o(x$fpl$printf1)
-    _printf_fp_hex                           0x080032c7   Thumb Code     4  printf2.o(x$fpl$printf2)
-    AHBPrescTable                            0x080032ca   Data          16  system_stm32f4xx.o(.constdata)
-    __I$use$fp                               0x080032ca   Number         0  usenofp.o(x$fpl$usenofp)
-    TAB_COLOR                                0x080032da   Data          10  lcd_font.o(.constdata)
-    Region$$Table$$Base                      0x080033b0   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x080033d0   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x080031d1   Thumb Code   146  main.o(i.main)
+    _get_lc_numeric                          0x08003289   Thumb Code    44  lc_numeric_c.o(locale$$code)
+    _fp_init                                 0x080032b5   Thumb Code    10  fpinit.o(x$fpl$fpinit)
+    __fplib_config_fpu_vfp                   0x080032bd   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fplib_config_pureend_doubles           0x080032bd   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    _printf_fp_dec                           0x080032bf   Thumb Code     4  printf1.o(x$fpl$printf1)
+    _printf_fp_hex                           0x080032c3   Thumb Code     4  printf2.o(x$fpl$printf2)
+    AHBPrescTable                            0x080032c6   Data          16  system_stm32f4xx.o(.constdata)
+    __I$use$fp                               0x080032c6   Number         0  usenofp.o(x$fpl$usenofp)
+    TAB_COLOR                                0x080032d6   Data          10  lcd_font.o(.constdata)
+    Region$$Table$$Base                      0x080033ac   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x080033cc   Number         0  anon$$obj.o(Region$$Table)
     uwTickFreq                               0x20000000   Data           1  stm32f4xx_hal.o(.data)
     uwTickPrio                               0x20000004   Data           4  stm32f4xx_hal.o(.data)
     uwTick                                   0x20000008   Data           4  stm32f4xx_hal.o(.data)
@@ -1456,9 +1456,9 @@ Memory Map of the image
 
   Image Entry point : 0x08000189
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00003400, Max: 0x00100000, ABSOLUTE)
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x000033fc, Max: 0x00100000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000033ec, Max: 0x00100000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x000033e8, Max: 0x00100000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -1619,30 +1619,30 @@ Memory Map of the image
     0x080031a0   0x080031a0   0x00000020   Code   RO         1404    i.__NVIC_SetPriority  stm32f4xx_hal_cortex.o
     0x080031c0   0x080031c0   0x0000000e   Code   RO         2055    i._is_digit         c_w.l(__printf_wp.o)
     0x080031ce   0x080031ce   0x00000002   PAD
-    0x080031d0   0x080031d0   0x000000bc   Code   RO           15    i.main              main.o
-    0x0800328c   0x0800328c   0x0000002c   Code   RO         2158    locale$$code        c_w.l(lc_numeric_c.o)
-    0x080032b8   0x080032b8   0x0000000a   Code   RO         2239    x$fpl$fpinit        fz_wm.l(fpinit.o)
-    0x080032c2   0x080032c2   0x00000004   Code   RO         2079    x$fpl$printf1       fz_wm.l(printf1.o)
-    0x080032c6   0x080032c6   0x00000004   Code   RO         2081    x$fpl$printf2       fz_wm.l(printf2.o)
-    0x080032ca   0x080032ca   0x00000000   Code   RO         2162    x$fpl$usenofp       fz_wm.l(usenofp.o)
-    0x080032ca   0x080032ca   0x00000010   Data   RO         1796    .constdata          system_stm32f4xx.o
-    0x080032da   0x080032da   0x0000000a   Data   RO         1976    .constdata          lcd_font.o
-    0x080032e4   0x080032e4   0x00000011   Data   RO         2063    .constdata          c_w.l(__printf_flags_ss_wp.o)
-    0x080032f5   0x080032f5   0x00000026   Data   RO         2097    .constdata          c_w.l(_printf_fp_hex.o)
-    0x0800331b   0x0800331b   0x00000001   PAD
-    0x0800331c   0x0800331c   0x00000094   Data   RO         2133    .constdata          c_w.l(bigflt0.o)
-    0x080033b0   0x080033b0   0x00000020   Data   RO         2308    Region$$Table       anon$$obj.o
-    0x080033d0   0x080033d0   0x0000001c   Data   RO         2157    locale$$data        c_w.l(lc_numeric_c.o)
+    0x080031d0   0x080031d0   0x000000b8   Code   RO           15    i.main              main.o
+    0x08003288   0x08003288   0x0000002c   Code   RO         2158    locale$$code        c_w.l(lc_numeric_c.o)
+    0x080032b4   0x080032b4   0x0000000a   Code   RO         2239    x$fpl$fpinit        fz_wm.l(fpinit.o)
+    0x080032be   0x080032be   0x00000004   Code   RO         2079    x$fpl$printf1       fz_wm.l(printf1.o)
+    0x080032c2   0x080032c2   0x00000004   Code   RO         2081    x$fpl$printf2       fz_wm.l(printf2.o)
+    0x080032c6   0x080032c6   0x00000000   Code   RO         2162    x$fpl$usenofp       fz_wm.l(usenofp.o)
+    0x080032c6   0x080032c6   0x00000010   Data   RO         1796    .constdata          system_stm32f4xx.o
+    0x080032d6   0x080032d6   0x0000000a   Data   RO         1976    .constdata          lcd_font.o
+    0x080032e0   0x080032e0   0x00000011   Data   RO         2063    .constdata          c_w.l(__printf_flags_ss_wp.o)
+    0x080032f1   0x080032f1   0x00000026   Data   RO         2097    .constdata          c_w.l(_printf_fp_hex.o)
+    0x08003317   0x08003317   0x00000001   PAD
+    0x08003318   0x08003318   0x00000094   Data   RO         2133    .constdata          c_w.l(bigflt0.o)
+    0x080033ac   0x080033ac   0x00000020   Data   RO         2308    Region$$Table       anon$$obj.o
+    0x080033cc   0x080033cc   0x0000001c   Data   RO         2157    locale$$data        c_w.l(lc_numeric_c.o)
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080033ec, Size: 0x00000b48, Max: 0x0001c000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x080033e8, Size: 0x00000b48, Max: 0x0001c000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x080033ec   0x0000000c   Data   RW         1563    .data               stm32f4xx_hal.o
-    0x2000000c   0x080033f8   0x00000004   Data   RW         1798    .data               system_stm32f4xx.o
-    0x20000010   0x080033fc   0x00000001   Data   RW         1893    .data               lcd.o
-    0x20000011   0x080033fd   0x00000003   PAD
+    0x20000000   0x080033e8   0x0000000c   Data   RW         1563    .data               stm32f4xx_hal.o
+    0x2000000c   0x080033f4   0x00000004   Data   RW         1798    .data               system_stm32f4xx.o
+    0x20000010   0x080033f8   0x00000001   Data   RW         1893    .data               lcd.o
+    0x20000011   0x080033f9   0x00000003   PAD
     0x20000014        -       0x00000058   Zero   RW          182    .bss                spi.o
     0x2000006c        -       0x00000400   Zero   RW         1837    .bss                lcd_bus.o
     0x2000046c        -       0x0000007c   Zero   RW         1975    .bss                lcd_font.o
@@ -1651,7 +1651,7 @@ Memory Map of the image
     0x20000748        -       0x00000400   Zero   RW            1    STACK               startup_stm32f407xx.o
 
 
-    Execution Region RW_IRAM2 (Exec base: 0x2001c000, Load base: 0x08003400, Size: 0x00000000, Max: 0x00004000, ABSOLUTE)
+    Execution Region RW_IRAM2 (Exec base: 0x2001c000, Load base: 0x080033fc, Size: 0x00000000, Max: 0x00004000, ABSOLUTE)
 
     **** No section assigned to this execution region ****
 
@@ -1667,7 +1667,7 @@ Image component sizes
        746         40          0          1          0       6123   lcd.o
        188         18          0          0       1024       3715   lcd_bus.o
       1264         98         10          0        124       7656   lcd_font.o
-       340         46          0          0          0     657652   main.o
+       336         48          0          0          0     657644   main.o
         72         10          0          0         88        771   spi.o
         64         26        392          0       1536        860   startup_stm32f407xx.o
        180         28          0         12          0       9549   stm32f4xx_hal.o
@@ -1680,7 +1680,7 @@ Image component sizes
         16          4         16          4          0       1183   system_stm32f4xx.o
 
     ----------------------------------------------------------------------
-      6482        424        450         20       2772     741167   Object Totals
+      6478        426        450         20       2772     741159   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         12          0          0          3          0          0   (incl. Padding)
 
@@ -1763,15 +1763,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     12610        642        682         20       2868     737827   Grand Totals
-     12610        642        682         20       2868     737827   ELF Image Totals
-     12610        642        682         20          0          0   ROM Totals
+     12606        644        682         20       2868     737819   Grand Totals
+     12606        644        682         20       2868     737819   ELF Image Totals
+     12606        644        682         20          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                13292 (  12.98kB)
+    Total RO  Size (Code + RO Data)                13288 (  12.98kB)
     Total RW  Size (RW Data + ZI Data)              2888 (   2.82kB)
-    Total ROM Size (Code + RO Data + RW Data)      13312 (  13.00kB)
+    Total ROM Size (Code + RO Data + RW Data)      13308 (  13.00kB)
 
 ==============================================================================
 
