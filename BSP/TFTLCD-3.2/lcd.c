@@ -213,7 +213,7 @@ void TFT_init(void)
     _TFT_SEND_DATA_NO_CS(0x13); _TFT_SEND_DATA_NO_CS(0x13);
     _TFT_SEND_DATA_NO_CS(0x2d); _TFT_SEND_DATA_NO_CS(0x32);
 
-    _TFT_SEND_CMD_NO_CS(0x20);  /* Display inversion off */
+    _TFT_SEND_CMD_NO_CS(0x21);  /* Display inversion off */
     _TFT_SEND_CMD_NO_CS(0x29);  /* Display on */
     HAL_Delay(20);
 
