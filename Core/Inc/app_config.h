@@ -4,13 +4,18 @@
 /*
  * F407VGT6 distortion / waveform-reconstruction configuration.
  *
- * Sampling chain: single ADC1 on PA1 (ADC1_IN1), TIM1_CC1 triggered,
- * one-shot DMA.  ADC clock 36 MHz, 15 conversion cycles -> 2.4 MSPS.
+ * Experimental sampling chain: ADC1 + ADC2 dual regular interleaved on
+ * PA1 (ADC12_IN1), free-running one-shot DMA capture.  Each ADC converts
+ * at a combined measured rate of approximately 2.118 MSPS.
+ * This precision-first setting gives each ADC 15 acquisition cycles and
+ * keeps the alternating interleave spacing close to uniform (13/14 cycles).
  */
-#define APP_ADC_SAMPLE_RATE_HZ       2400000.0f
+#define APP_ADC_INTERLEAVED_ENABLED  1
+/* DWT: 2048 combined samples take about 139264 core cycles at 144 MHz. */
+#define APP_ADC_SAMPLE_RATE_HZ       2117647.059f
 #define APP_FFT_SIZE                 4096U
 #define APP_ADC_FRAME_SAMPLES        APP_FFT_SIZE
-#define APP_ADC_DMA_WORD_COUNT       APP_ADC_FRAME_SAMPLES
+#define APP_ADC_DMA_WORD_COUNT       (APP_ADC_FRAME_SAMPLES / 2U)
 #define APP_DMA_SAMPLE_COUNT         APP_ADC_FRAME_SAMPLES
 #define APP_SPECTRUM_BINS            ((APP_FFT_SIZE / 2U) + 1U)
 #define APP_OUTPUT_SPECTRUM_BINS     ((APP_FFT_SIZE / 8U) + 1U)
@@ -25,7 +30,13 @@
 #define APP_EDGE_TOLERANCE_BINS      5U
 #define APP_LOWPASS_TAP_COUNT        63U
 #define APP_NO_SIGNAL_RMS_V          0.002f
-#define APP_WEAK_SIGNAL_RMS_V        0.020f
+/*
+ * 50 mVpp sine is only 17.68 mVrms before the analogue-chain roll-off.
+ * The old 20 mVrms weak-signal threshold therefore rejected a valid
+ * minimum-level input, especially near 500 kHz.  Keep a conservative
+ * margin above the measured noise floor while accepting the task range.
+ */
+#define APP_WEAK_SIGNAL_RMS_V        0.005f
 #define APP_CLIP_LOW_CODE            4U
 #define APP_CLIP_HIGH_CODE           4091U
 #define APP_CLIP_SAMPLE_LIMIT        4U
@@ -56,8 +67,14 @@
 #define APP_TJC_TRANSFER_TIMEOUT_MS   500U
 #define APP_TJC_GRAPH_INVALID_FRAMES  3U
 #define APP_VOLTAGE_GLOBAL_SCALE      1.0f
-#define APP_UPP_SCALE                 1.020408f
-#define APP_RMS_SCALE                 1.0f
+/*
+ * Bench calibration at 100 kHz:
+ *   250 mVpp -> 247.00 mVpp, 88.39 mVrms -> 85.45 mVrms.
+ * No analogue front end was connected during this measurement, so do not
+ * apply an assumed analogue low-pass response.
+ */
+#define APP_UPP_SCALE                 1.032803f
+#define APP_RMS_SCALE                 1.034407f
 #define APP_SPECTRUM_SCALE            1.0f
 #define APP_FREQUENCY_SCALE           1.0f
 

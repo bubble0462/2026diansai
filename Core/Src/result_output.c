@@ -221,7 +221,8 @@ static uint8_t collect_components(const measurement_result_t *result,
     components[count].model_frequency_hz = result->fundamental_frequency_hz;
     components[count].rms_v = result->fundamental_rms_v *
                               APP_VOLTAGE_GLOBAL_SCALE *
-                              APP_SPECTRUM_SCALE;
+                              APP_SPECTRUM_SCALE *
+                              APP_RMS_SCALE;
     ++count;
   }
   for (index = 1U; index < APP_MAX_HARMONICS; ++index)
@@ -250,7 +251,8 @@ static uint8_t collect_components(const measurement_result_t *result,
         result->fundamental_frequency_hz * (float)harmonic->order;
     components[count].rms_v = harmonic->amplitude_rms_v *
                               APP_VOLTAGE_GLOBAL_SCALE *
-                              APP_SPECTRUM_SCALE;
+                              APP_SPECTRUM_SCALE *
+                              APP_RMS_SCALE;
     ++count;
     if (count >= TJC_MAX_COMPONENTS) break;
   }
@@ -480,9 +482,9 @@ static float synthesized_value(const display_component_t *components,
   uint32_t index;
   for (index = 0U; index < component_count; ++index)
   {
+    float phase;
     if (components[index].order > TJC_WAVEFORM_SYNTH_MAX_ORDER) continue;
-    float phase = TWO_PI_F *
-                  components[index].model_frequency_hz * time_s;
+    phase = TWO_PI_F * components[index].model_frequency_hz * time_s;
     value += coefficients[1U + 2U * index] * sinf(phase) +
              coefficients[2U + 2U * index] * cosf(phase);
   }
@@ -675,9 +677,17 @@ static uint16_t build_value_commands(const display_snapshot_t *snapshot,
       memset(&s_upp_average, 0, sizeof(s_upp_average));
     }
     {
-      float rms = update_average(&s_rms_average,
+      float component_square_sum = 0.0f;
+      float rms;
+      for (index = 0U; index < component_count; ++index)
+      {
+        component_square_sum += components[index].rms_v *
+                                components[index].rms_v;
+      }
+      rms = (component_count != 0U) ? sqrtf(component_square_sum) :
           snapshot->result.input_rms_v * APP_VOLTAGE_GLOBAL_SCALE *
-          APP_RMS_SCALE, TJC_RMS_AVG_SAMPLES);
+          APP_RMS_SCALE;
+      rms = update_average(&s_rms_average, rms, TJC_RMS_AVG_SAMPLES);
       format_fixed(text, sizeof(text), rms * 1000.0f, 2U, "mV");
     }
     length = append_text(length, "turms", text);

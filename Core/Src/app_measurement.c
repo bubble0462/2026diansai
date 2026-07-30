@@ -8,6 +8,7 @@
 #include "signal_preprocess.h"
 #include "spectrum_analyzer.h"
 #include "main.h"
+#include <math.h>
 #include <string.h>
 
 /*
@@ -21,6 +22,7 @@
  */
 
 static float s_spectrum_rms[APP_SPECTRUM_BINS];
+static uint16_t s_aligned_frame[APP_ADC_FRAME_SAMPLES];
 static measurement_result_t s_result;
 static uint32_t s_sequence;
 static uint8_t s_adc_recovery_pending;
@@ -29,6 +31,66 @@ static uint32_t s_last_overrun_count;
 #if APP_GAIN_AUTO_CONTROL_ENABLED
 static uint8_t s_gain_initialised;
 #endif
+
+/*
+ * Dual interleaving exposes the small ADC1/ADC2 offset and gain mismatch as
+ * an alternating-code ripple.  It is most visible on a 50 mVpp waveform and
+ * can also create false high-frequency energy.  Estimate each converter's
+ * mean and AC power over the complete frame, then map both streams to their
+ * common mean and RMS.  A 10% clamp prevents noise-only frames from receiving
+ * an unreasonable gain correction.
+ */
+static const uint16_t *align_interleaved_adcs(const uint16_t *raw)
+{
+  float mean[2] = {0.0f, 0.0f};
+  float power[2] = {0.0f, 0.0f};
+  float scale[2] = {1.0f, 1.0f};
+  float common_mean;
+  float common_rms;
+  uint32_t count = (APP_ADC_FRAME_SAMPLES / 2U) - 1U;
+  uint32_t index;
+
+  /* The first conversion after enabling dual mode is not settled. */
+  for (index = 2U; index < APP_ADC_FRAME_SAMPLES; ++index)
+  {
+    mean[index & 1U] += (float)raw[index];
+  }
+  mean[0] /= (float)count;
+  mean[1] /= (float)count;
+  for (index = 2U; index < APP_ADC_FRAME_SAMPLES; ++index)
+  {
+    uint32_t adc = index & 1U;
+    float centered = (float)raw[index] - mean[adc];
+    power[adc] += centered * centered;
+  }
+  power[0] = sqrtf(power[0] / (float)count);
+  power[1] = sqrtf(power[1] / (float)count);
+  common_mean = 0.5f * (mean[0] + mean[1]);
+  common_rms = 0.5f * (power[0] + power[1]);
+  if ((power[0] > 3.0f) && (power[1] > 3.0f))
+  {
+    scale[0] = common_rms / power[0];
+    scale[1] = common_rms / power[1];
+    if (scale[0] < 0.90f) scale[0] = 0.90f;
+    if (scale[0] > 1.10f) scale[0] = 1.10f;
+    if (scale[1] < 0.90f) scale[1] = 0.90f;
+    if (scale[1] > 1.10f) scale[1] = 1.10f;
+  }
+  for (index = 2U; index < APP_ADC_FRAME_SAMPLES; ++index)
+  {
+    uint32_t adc = index & 1U;
+    float corrected = common_mean +
+        ((float)raw[index] - mean[adc]) * scale[adc];
+    if (corrected < 0.0f) corrected = 0.0f;
+    if (corrected > APP_ADC_FULL_SCALE) corrected = APP_ADC_FULL_SCALE;
+    s_aligned_frame[index] = (uint16_t)(corrected + 0.5f);
+  }
+  /* Hann-windowed FFT nearly suppresses these endpoints, but replacing the
+   * invalid startup pair also protects raw min/max and debug views. */
+  s_aligned_frame[0] = s_aligned_frame[2];
+  s_aligned_frame[1] = s_aligned_frame[3];
+  return s_aligned_frame;
+}
 
 static uint16_t waveform_sample_count(const measurement_result_t *result)
 {
@@ -121,6 +183,7 @@ void AppMeasurement_Process(void)
     s_adc_recovery_pending = 1U;
     return;
   }
+  frame = align_interleaved_adcs(frame);
 
   memset(&s_result, 0, sizeof(s_result));
   s_result.sequence = ++s_sequence;
