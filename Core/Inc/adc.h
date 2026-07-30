@@ -10,10 +10,6 @@
   * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -34,17 +30,14 @@ extern "C" {
 
 extern ADC_HandleTypeDef hadc1;
 
-extern ADC_HandleTypeDef hadc2;
-
-extern ADC_HandleTypeDef hadc3;
+extern DMA_HandleTypeDef hdma_adc1;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
 void MX_ADC1_Init(void);
-void MX_ADC2_Init(void);
-void MX_ADC3_Init(void);
+float ADC_GetReferenceVoltage(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -55,4 +48,3 @@ void MX_ADC3_Init(void);
 #endif
 
 #endif /* __ADC_H__ */
-

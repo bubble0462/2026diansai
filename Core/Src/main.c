@@ -11,7 +11,8 @@
   *
   * This software is licensed under terms that can be found in the LICENSE file
   * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * If no software is licensed to you under the LICENSE file, or in this
+  * software component, the software is provided to you AS-IS.
   *
   ******************************************************************************
   */
@@ -20,18 +21,15 @@
 #include "main.h"
 #include "adc.h"
 #include "dac.h"
-#include "spi.h"
+#include "dma.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd_bus.h"
-#include "lcd.h"
-#include "lcd_font.h"
-#include "AD9959.h"
-#include "delay.h"
+#include "app_measurement.h"
+#include "result_output.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -95,56 +93,47 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
-  MX_ADC2_Init();
-  MX_ADC3_Init();
-  MX_DAC_Init();
-  MX_SPI2_Init();
   MX_TIM1_Init();
-  MX_TIM2_Init();
-  MX_TIM3_Init();
-  MX_TIM4_Init();
   MX_USART1_UART_Init();
+  MX_DAC_Init();
   /* USER CODE BEGIN 2 */
-  Delay_Init();
-  AD9959_Init();
-
-  /* 3.2" TFT (ST7789VW) + W25Qxx 字库初始化与自检 */
-  LCD_Bus_Init();                 /* 设置 CS/CS2/DC/BL 默认态 */
-  TFT_init();                     /* ST7789VW 初始化序列 */
-  BL_1;                           /* 开背光 */
-
-  if (CHECK_FALSH())              /* 字库 Flash 自检通过 */
-  {
-      TFT_full(BLACK);            /* 黑底 */
-
-      /* 标题: 自动兼容 UTF-8 / GB2312 */
-      SET_FONT_STYLE(WHITE, BLACK, SONG_STYLE24);
-      DIS_CHINESE_AUTO(10, 10, "屏幕测试");
-
-      /* 浮点数显示 */
-      SET_FONT_STYLE(GREEN, BLACK, SONG_STYLE20);
-      LCD_DisplayFloat(10, 60, 3.14159, 8, 4, SONG_STYLE20);
-
-      /* 英文: "TFT OK" */
-      SET_FONT_STYLE(BLUE, BLACK, SONG_STYLE16);
-      DIS_CHINESE(10, 100, "TFT OK");
-  }
-  else                            /* 字库自检失败 */
-  {
-      TFT_full(RED);              /* 红屏报警 */
-  }
+  AppMeasurement_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
   {
+    /*
+     * Diagnostic heartbeat on LED (PC13):
+     *   - slow blink (~0.5 Hz): ADC frames are flowing, measurement alive
+     *   - fast blink (~5 Hz):    no ADC data yet (acquisition not running)
+     * The toggle periods are picked so the two states are clearly distinct
+     * without a debugger.
+     */
+    uint32_t last_frame = 0U;
+    uint32_t last_toggle = HAL_GetTick();
+    while (1)
+    {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    HAL_Delay(500);
+      AppMeasurement_Process();
+      ResultOutput_Process();
+
+      {
+        uint32_t now = HAL_GetTick();
+        uint32_t frame = AppMeasurement_GetFrameCount();
+        uint32_t period = (frame != last_frame) ? 1000U : 100U;
+        if ((now - last_toggle) >= period)
+        {
+          last_toggle = now;
+          HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+          last_frame = frame;
+        }
+      }
+    }
   }
   /* USER CODE END 3 */
 }
@@ -170,10 +159,12 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 336;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  /* 8 MHz / 4 * 144 / 2 = 144 MHz SYSCLK. */
+  RCC_OscInitStruct.PLL.PLLN = 144;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
+  /* 288 MHz / 6 = 48 MHz USB/RNG/SDIO clock domain. */
+  RCC_OscInitStruct.PLL.PLLQ = 6;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -188,10 +179,16 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
+  /* 144 MHz requires FLASH_LATENCY_5 (wait states); LATENCY_4 corrupts
+   * instruction fetches and stops the CPU before any code can run. */
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
   {
     Error_Handler();
   }
+
+  /** Enables the Clock Security System
+  */
+  HAL_RCC_EnableCSS();
 }
 
 /* USER CODE BEGIN 4 */
@@ -217,7 +214,7 @@ void Error_Handler(void)
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
   * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
+  * @param  line: assert_param error line source
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
