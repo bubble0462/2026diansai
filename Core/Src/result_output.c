@@ -473,6 +473,26 @@ static int fit_components(const display_snapshot_t *snapshot,
   return solve_linear(matrix, vector, coefficients, coefficient_count);
 }
 
+static void update_components_from_fit(display_component_t *components,
+                                       uint8_t component_count,
+                                       const float *coefficients)
+{
+  uint32_t index;
+  for (index = 0U; index < component_count; ++index)
+  {
+    float sine = coefficients[1U + 2U * index];
+    float cosine = coefficients[2U + 2U * index];
+    float peak_v = sqrtf(sine * sine + cosine * cosine);
+    /*
+     * The contest defines each spectrum component amplitude as Ui in
+     * Ui*sin(...), i.e. peak amplitude.  Internally keep RMS so the existing
+     * UI conversion (x sqrt(2)) and true-RMS root-sum-square remain exact.
+     */
+    components[index].rms_v =
+        peak_v * APP_RMS_SCALE * APP_SPECTRUM_SCALE / SQRT_TWO_F;
+  }
+}
+
 static float synthesized_value(const display_component_t *components,
                                uint8_t component_count,
                                const float *coefficients,
@@ -784,6 +804,15 @@ static void prepare_active_snapshot(void)
       (snapshot->result.fundamental_frequency_hz > 0.0f) &&
       (fit_components(snapshot, components, component_count,
                        coefficients) == 0)) ? 1 : 0;
+  if (fit_valid)
+  {
+    /*
+     * Use one joint time-domain solution for component amplitudes, true RMS,
+     * reconstructed Upp and the qualitative spectrum.  This keeps all four
+     * displayed views mutually consistent for multi-harmonic inputs.
+     */
+    update_components_from_fit(components, component_count, coefficients);
+  }
   memset(s_tx_buffer, 0, sizeof(s_tx_buffer));
   length = build_value_commands(snapshot, components, component_count,
                                 coefficients, fit_valid);

@@ -54,7 +54,12 @@
  * waveform samples) within the 128 KB main SRAM alongside the FFT buffers.
  * The least-squares fit only consumes TJC_MAX_FIT_SAMPLES points anyway. */
 #define APP_WAVEFORM_MAX_SAMPLES     2048U
-#define APP_WAVEFORM_PERIODS         8U
+/*
+ * Keep more cycles for the joint phase/amplitude fit.  At 500 kHz and the
+ * current 2.118 MSPS rate, 8 periods contain only about 34 samples; 32
+ * periods provide enough redundancy to solve H1 plus two harmonics robustly.
+ */
+#define APP_WAVEFORM_PERIODS         32U
 
 /*
  * TJC serial display (diansai.HMI) and measurement calibration.
