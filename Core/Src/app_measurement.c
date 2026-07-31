@@ -95,6 +95,7 @@ static const uint16_t *align_interleaved_adcs(const uint16_t *raw)
 static uint16_t waveform_sample_count(const measurement_result_t *result)
 {
   float samples_per_period;
+  float minimum_frequency_hz;
   float maximum_frequency_hz;
   uint32_t count;
 
@@ -106,8 +107,17 @@ static uint16_t waveform_sample_count(const measurement_result_t *result)
   maximum_frequency_hz = APP_MAX_FUNDAMENTAL_HZ +
       ((float)APP_EDGE_TOLERANCE_BINS *
        result->frequency_resolution_hz);
+  /*
+   * A true 10 kHz tone can interpolate to 9999.x Hz from one frame to the
+   * next.  The previous strict 10000.0 Hz comparison discarded roughly half
+   * of the lower-bound frames, making Upp disappear and the graph clear.
+   * One FFT-bin tolerance accepts the legal boundary without expanding the
+   * analyser's actual search range.
+   */
+  minimum_frequency_hz = APP_WAVEFORM_MIN_HZ -
+      result->frequency_resolution_hz;
   if (((result->flags & (MEAS_FLAG_NO_SIGNAL | MEAS_FLAG_TOO_WEAK)) != 0U) ||
-      (result->fundamental_frequency_hz < APP_WAVEFORM_MIN_HZ) ||
+      (result->fundamental_frequency_hz < minimum_frequency_hz) ||
       (result->fundamental_frequency_hz > maximum_frequency_hz))
   {
     return 0U;

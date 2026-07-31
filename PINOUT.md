@@ -58,7 +58,7 @@ configuration-time output glitches. The software-serial register driver under
 firmware initializes the delay timer and resets the AD9959 after GPIO setup;
 applications select channels and configure output frequency/amplitude as needed.
 
-## USART1 Debug Port
+## USART1 Serial Display
 
 | Pin | Function | Configuration |
 |---|---|---|
@@ -66,7 +66,20 @@ applications select channels and configure output frequency/amplitude as needed.
 | PA10 | USART1_RX | AF7 |
 
 USART1 is asynchronous 115200 baud, 8 data bits, 1 stop bit, no parity, no
-hardware flow control, oversampling 16. DMA and RX interrupts are disabled.
+hardware flow control and oversampling 16.  Its receive path uses circular DMA
+for the serial display reply stream.
+
+## USART2 Calibration Port
+
+| Pin | Function | Configuration |
+|---|---|---|
+| PA2 | USART2_TX | AF7 |
+| PA3 | USART2_RX | AF7 |
+
+USART2 is an independent PC calibration link at 115200 baud, 8 data bits,
+1 stop bit, no parity and no hardware flow control.  It periodically emits
+one ASCII `CAL,F=...,VPP=...,RMS=...` record.  The serial display remains on
+USART1, so the two interfaces can operate simultaneously.
 
 ## Keys
 
@@ -91,8 +104,8 @@ enabled.
 | Pin | Peripheral function | Base configuration |
 |---|---|---|
 | PA1 | ADC1_IN1 | 12-bit, single conversion, software trigger |
-| PA2 | ADC2_IN2 | 12-bit, single conversion, software trigger |
-| PA3 | ADC3_IN3 | 12-bit, single conversion, software trigger |
+| PA2 | USART2_TX | PC calibration output |
+| PA3 | USART2_RX | PC calibration input |
 | PA4 | DAC_OUT1 | No trigger, output buffer enabled |
 | PA5 | DAC_OUT2 | No trigger, output buffer enabled |
 | PA0 | TIM2_CH1 | PWM-output placeholder, not started |

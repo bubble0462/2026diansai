@@ -98,6 +98,7 @@ int main(void)
   MX_ADC2_Init();
   MX_TIM1_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   MX_DAC_Init();
   /* USER CODE BEGIN 2 */
   AppMeasurement_Init();

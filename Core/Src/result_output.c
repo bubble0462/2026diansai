@@ -206,6 +206,42 @@ static void format_fixed(char *buffer, size_t size, float value,
                  (unsigned long)(scaled % scale), unit);
 }
 
+static void send_calibration_record(int valid, float frequency_khz,
+                                    float vpp_mv, float rms_mv)
+{
+  char buffer[72];
+  int written;
+  if ((valid == 0) || !isfinite(frequency_khz) || !isfinite(vpp_mv) ||
+      !isfinite(rms_mv) || (frequency_khz < 0.0f) ||
+      (vpp_mv < 0.0f) || (rms_mv < 0.0f))
+  {
+    static const uint8_t invalid[] = "CAL,INVALID\r\n";
+    (void)HAL_UART_Transmit(&huart2, (uint8_t *)invalid,
+                            (uint16_t)(sizeof(invalid) - 1U), 20U);
+    return;
+  }
+  {
+    uint32_t frequency_scaled =
+        (uint32_t)(frequency_khz * 1000.0f + 0.5f);
+    uint32_t vpp_scaled = (uint32_t)(vpp_mv * 100.0f + 0.5f);
+    uint32_t rms_scaled = (uint32_t)(rms_mv * 100.0f + 0.5f);
+    written = snprintf(
+        buffer, sizeof(buffer),
+        "CAL,F=%lu.%03lu,VPP=%lu.%02lu,RMS=%lu.%02lu\r\n",
+        (unsigned long)(frequency_scaled / 1000U),
+        (unsigned long)(frequency_scaled % 1000U),
+        (unsigned long)(vpp_scaled / 100U),
+        (unsigned long)(vpp_scaled % 100U),
+        (unsigned long)(rms_scaled / 100U),
+        (unsigned long)(rms_scaled % 100U));
+  }
+  if ((written > 0) && ((size_t)written < sizeof(buffer)))
+  {
+    (void)HAL_UART_Transmit(&huart2, (uint8_t *)buffer,
+                            (uint16_t)written, 20U);
+  }
+}
+
 static uint8_t collect_components(const measurement_result_t *result,
                                   display_component_t *components)
 {
@@ -650,15 +686,20 @@ static uint16_t build_value_commands(const display_snapshot_t *snapshot,
   uint32_t index;
   float direct_upp = 0.0f;
   float calculated_rms = 0.0f;
+  float calibration_frequency_khz = 0.0f;
+  float calibration_rms_v = 0.0f;
+  int calibration_valid = 0;
   int measurement_valid =
       ((snapshot->result.flags & (MEAS_FLAG_NO_SIGNAL | MEAS_FLAG_TOO_WEAK |
                                   MEAS_FLAG_CLIPPING |
                                   MEAS_FLAG_DC_OVERLOAD)) == 0U);
   if (measurement_valid)
   {
+    calibration_frequency_khz =
+        snapshot->result.fundamental_frequency_hz *
+        APP_FREQUENCY_SCALE / 1000.0f;
     format_fixed(text, sizeof(text),
-                 snapshot->result.fundamental_frequency_hz *
-                 APP_FREQUENCY_SCALE / 1000.0f,
+                 calibration_frequency_khz,
                  3U, "kHz");
     length = append_text(length, "tf1", text);
     /*
@@ -708,9 +749,13 @@ static uint16_t build_value_commands(const display_snapshot_t *snapshot,
           snapshot->result.input_rms_v * APP_VOLTAGE_GLOBAL_SCALE *
           APP_RMS_SCALE;
       rms = update_average(&s_rms_average, rms, TJC_RMS_AVG_SAMPLES);
+      calibration_rms_v = rms;
       format_fixed(text, sizeof(text), rms * 1000.0f, 2U, "mV");
     }
     length = append_text(length, "turms", text);
+    calibration_valid =
+        ((snapshot->waveform_count != 0U) && (direct_upp > 0.0f) &&
+         (calibration_rms_v > 0.0f)) ? 1 : 0;
   }
   else
   {
@@ -772,6 +817,9 @@ static uint16_t build_value_commands(const display_snapshot_t *snapshot,
     length = append_text(length, "tcupp", "-- mV");
     length = append_text(length, "tcrms", "-- mV");
   }
+  send_calibration_record(calibration_valid, calibration_frequency_khz,
+                          direct_upp * 1000.0f,
+                          calibration_rms_v * 1000.0f);
   return length;
 }
 
@@ -830,17 +878,29 @@ static void prepare_active_snapshot(void)
   }
   else
   {
+    uint32_t fatal_flags =
+        MEAS_FLAG_NO_SIGNAL | MEAS_FLAG_TOO_WEAK | MEAS_FLAG_CLIPPING |
+        MEAS_FLAG_DC_OVERLOAD;
     /*
      * Keep the last successful graph through short analysis dropouts.
-     * A clear is only requested after several consecutive frames without
-     * a usable component.  This prevents a single bad FFT/fit frame from
-     * alternating cle/addt and visibly flashing the display.
+     * A valid measurement with one failed least-squares fit must not age out
+     * the graph: doing so made the screen twitch even though the ADC signal
+     * remained stable.  Clear only after several consecutive frames with a
+     * real input fault.
      */
-    if (s_graph_invalid_frames < APP_TJC_GRAPH_INVALID_FRAMES)
+    if ((snapshot->result.flags & fatal_flags) != 0U)
     {
-      ++s_graph_invalid_frames;
+      if (s_graph_invalid_frames < APP_TJC_GRAPH_INVALID_FRAMES)
+      {
+        ++s_graph_invalid_frames;
+      }
     }
-    if (s_graph_invalid_frames >= APP_TJC_GRAPH_INVALID_FRAMES)
+    else
+    {
+      s_graph_invalid_frames = 0U;
+    }
+    if (((snapshot->result.flags & fatal_flags) != 0U) &&
+        (s_graph_invalid_frames >= APP_TJC_GRAPH_INVALID_FRAMES))
     {
       memset(s_graph, 0, sizeof(s_graph));
       s_graph_available = 0U;

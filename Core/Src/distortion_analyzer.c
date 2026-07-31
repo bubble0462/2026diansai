@@ -9,6 +9,7 @@
 #define NOISE_GUARD_RADIUS      4U
 #define NOISE_OUTER_RADIUS      32U
 #define NOISE_SAMPLE_CAPACITY   64U
+#define SUBHARMONIC_MIN_RATIO   0.20f
 
 static uint32_t find_local_peak(uint32_t center, uint32_t radius)
 {
@@ -20,6 +21,49 @@ static uint32_t find_local_peak(uint32_t center, uint32_t radius)
 static uint32_t absolute_difference(uint32_t left, uint32_t right)
 {
   return (left > right) ? (left - right) : (right - left);
+}
+
+static uint32_t choose_fundamental_bin(uint32_t strongest_bin,
+                                       uint32_t first_bin,
+                                       uint32_t last_bin)
+{
+  float strongest_rms =
+      SpectrumAnalyzer_BandRms(strongest_bin, HARMONIC_BAND_RADIUS);
+  uint32_t order;
+
+  /*
+   * A legal G-problem waveform may have a harmonic larger than its
+   * fundamental.  Searching only for the largest FFT peak then labels H2/H3
+   * as f1 and produces octave jumps.  Check integer subharmonics from the
+   * lowest possible candidate upward (largest divisor first).  The candidate
+   * must contain a real spectral line of at least 20% of the strongest
+   * component, so a pure 20 kHz sine is not mistaken for a noisy 10 kHz
+   * fundamental.
+   */
+  for (order = APP_MAX_HARMONICS; order >= 2U; --order)
+  {
+    uint32_t expected_bin =
+        (strongest_bin + (order / 2U)) / order;
+    uint32_t candidate_bin;
+    float candidate_rms;
+    if ((expected_bin < first_bin) || (expected_bin > last_bin))
+    {
+      continue;
+    }
+    candidate_bin = find_local_peak(expected_bin, HARMONIC_SEARCH_RADIUS);
+    if (absolute_difference(candidate_bin * order, strongest_bin) >
+        (order + HARMONIC_SEARCH_RADIUS))
+    {
+      continue;
+    }
+    candidate_rms =
+        SpectrumAnalyzer_BandRms(candidate_bin, HARMONIC_BAND_RADIUS);
+    if (candidate_rms >= (strongest_rms * SUBHARMONIC_MIN_RATIO))
+    {
+      return candidate_bin;
+    }
+  }
+  return strongest_bin;
 }
 
 static int is_harmonic_guard_bin(uint32_t bin, uint32_t fundamental_bin)
@@ -208,7 +252,8 @@ void DistortionAnalyzer_Run(float *windowed,
     fundamental_last_bin = analysis_last_bin;
   }
   strongest_bin = SpectrumAnalyzer_FindPeak(first_bin, fundamental_last_bin);
-  fundamental_bin = strongest_bin;
+  fundamental_bin = choose_fundamental_bin(strongest_bin, first_bin,
+                                            fundamental_last_bin);
 
   result->fundamental_frequency_hz =
       SpectrumAnalyzer_InterpolateBin(fundamental_bin) * delta_f;
